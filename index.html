@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US Trade Tariff Comparison</title>
+  <style>
+    :root {
+      --primary: #2a4d69;
+      --secondary: #4b86b4;
+      --accent: #adcbe3;
+      --light: #e7eff6;
+      --dark: #1a3246;
+      --us-color: #e63946;
+      --partner-color: #457b9d;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      font-weight: 300;
+    }
+    
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .country-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    
+    .country-header {
+      background-color: var(--secondary);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .country-name {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .trade-volume {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+    
+    .country-body {
+      padding: 1.5rem;
+    }
+    
+    .tariff-category {
+      margin-bottom: 2rem;
+    }
+    
+    .category-name {
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin-bottom: 0.8rem;
+      color: var(--dark);
+    }
+    
+    .tariff-chart {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .chart-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    
+    .label-us {
+      width: 50%;
+      text-align: right;
+      padding-right: 1rem;
+    }
+    
+    .label-partner {
+      width: 50%;
+      padding-left: 1rem;
+    }
+    
+    .bar-container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 40px;
+    }
+    
+    .mid-line {
+      width: 2px;
+      height: 40px;
+      background-color: #ddd;
+    }
+    
+    .us-bar-container, .partner-bar-container {
+      width: 50%;
+      height: 40px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .us-bar-container {
+      justify-content: flex-end;
+    }
+    
+    .partner-bar-container {
+      justify-content: flex-start;
+    }
+    
+    .us-bar {
+      background-color: var(--us-color);
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      color: white;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 0 8px;
+      border-radius: 4px 0 0 4px;
+      min-width: 60px; /* Ensure minimum width for text */
+    }
+    
+    .partner-bar {
+      background-color: var(--partner-color);
+      height: 24px;
+      display: flex;
+      align-items: center;
+      color: white;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 0 8px;
+      border-radius: 0 4px 4px 0;
+      min-width: 60px; /* Ensure minimum width for text */
+    }
+    
+    .legend {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 2rem 0;
+      gap: 2rem;
+      clear: both; /* Added clear: both */
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+    
+    .us-legend {
+      background-color: var(--us-color);
+    }
+    
+    .partner-legend {
+      background-color: var(--partner-color);
+    }
+    
+    .nav-links {
+      display: flex;
+      justify-content: flex-start;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+      float: left;
+      width: 100%;
+    }
+    
+    .nav-link {
+      background-color: var(--accent);
+      color: var(--dark);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      float: left;
+    }
+    
+    .nav-link:hover {
+      background-color: var(--secondary);
+      color: white;
+    }
+    
+    footer {
+      background-color: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+      clear: both;
+    }
+    
+    @media (max-width: 768px) {
+      .country-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .trade-volume {
+        margin-top: 0.5rem;
+      }
+      
+      .nav-links {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>US Trade Tariff Comparison</h1>
+    <p class="subtitle">A comparison of tariffs between the United States and its top 10 trading partners</p>
+  </header>
+  
+  <main>
+    <div class="nav-links">
+      <a href="#mexico" class="nav-link">Mexico</a>
+      <a href="#canada" class="nav-link">Canada</a>
+      <a href="#china" class="nav-link">China</a>
+      <a href="#germany" class="nav-link">Germany</a>
+      <a href="#japan" class="nav-link">Japan</a>
+      <a href="#south-korea" class="nav-link">South Korea</a>
+      <a href="#taiwan" class="nav-link">Taiwan</a>
+      <a href="#vietnam" class="nav-link">Vietnam</a>
+      <a href="#uk" class="nav-link">United Kingdom</a>
+      <a href="#india" class="nav-link">India</a>
+    </div>
+    
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color us-legend"></div>
+        <span>US Tariffs on Imports</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color partner-legend"></div>
+        <span>Partner Tariffs on US Exports</span>
+      </div>
+    </div>
+    
+    <!-- Mexico -->
+    <div id="mexico" class="country-card">
+      <div class="country-header">
+        <h2 class="country-name">Mexico</h2>
+        <p class="trade-volume">Annual Trade Volume: $839.9 billion</p>
+      </div>
+      <div class="country-body">
+        <div class="tariff-category">
+          <h3 class="category-name">Automotive</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Mexican Imports</div>
+            <div class="label-partner">Mexican Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 30%;">2.8%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 40%;">5.3%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Electronics</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Mexican Imports</div>
+            <div class="label-partner">Mexican Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 35%;">3.8%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 42%;">5.6%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Agricultural Products</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Mexican Imports</div>
+            <div class="label-partner">Mexican Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 32%;">3.2%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 47%;">6.8%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Canada -->
+    <div id="canada" class="country-card">
+      <div class="country-header">
+        <h2 class="country-name">Canada</h2>
+        <p class="trade-volume">Annual Trade Volume: $762.1 billion</p>
+      </div>
+      <div class="country-body">
+        <div class="tariff-category">
+          <h3 class="category-name">Automotive</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Canadian Imports</div>
+            <div class="label-partner">Canadian Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 30%;">2.5%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 40%;">6.1%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Energy Products</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Canadian Imports</div>
+            <div class="label-partner">Canadian Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 30%;">0.9%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 30%;">1.2%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Wood & Paper Products</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Canadian Imports</div>
+            <div class="label-partner">Canadian Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 35%;">3.8%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 35%;">3.5%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- China -->
+    <div id="china" class="country-card">
+      <div class="country-header">
+        <h2 class="country-name">China</h2>
+        <p class="trade-volume">Annual Trade Volume: $582.4 billion</p>
+      </div>
+      <div class="country-body">
+        <div class="tariff-category">
+          <h3 class="category-name">Electronics</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Chinese Imports</div>
+            <div class="label-partner">Chinese Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 80%;">19.3%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 70%;">14.8%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Machinery</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on Chinese Imports</div>
+                        <div class="label-partner">Chinese Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 70%;">15.2%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 65%;">12.7%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="tariff-category">
+                      <h3 class="category-name">Agricultural Products</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on Chinese Imports</div>
+                        <div class="label-partner">Chinese Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 45%;">9.4%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 85%;">20.1%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Germany -->
+                <div id="germany" class="country-card">
+                  <div class="country-header">
+                    <h2 class="country-name">Germany</h2>
+                    <p class="trade-volume">Annual Trade Volume: $236.0 billion</p>
+                  </div>
+                  <div class="country-body">
+                    <div class="tariff-category">
+                      <h3 class="category-name">Automotive</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on German Imports</div>
+                        <div class="label-partner">German Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 25%;">2.5%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 100%;">10.0%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="tariff-category">
+                      <h3 class="category-name">Machinery</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on German Imports</div>
+                        <div class="label-partner">German Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 33%;">3.3%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 45%;">5.7%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="tariff-category">
+                      <h3 class="category-name">Pharmaceuticals</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on German Imports</div>
+                        <div class="label-partner">German Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 10%;">0.3%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 10%;">0.0%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Japan -->
+                <div id="japan" class="country-card">
+                  <div class="country-header">
+                    <h2 class="country-name">Japan</h2>
+                    <p class="trade-volume">Annual Trade Volume: $227.9 billion</p>
+                  </div>
+                  <div class="country-body">
+                    <div class="tariff-category">
+                      <h3 class="category-name">Automotive</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on Japanese Imports</div>
+                        <div class="label-partner">Japanese Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 25%;">2.5%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 0%;">0.0%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="tariff-category">
+                      <h3 class="category-name">Electronics</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on Japanese Imports</div>
+                        <div class="label-partner">Japanese Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 20%;">1.7%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 15%;">0.8%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="tariff-category">
+                      <h3 class="category-name">Agricultural Products</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on Japanese Imports</div>
+                        <div class="label-partner">Japanese Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 41%;">4.1%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 125%;">34.3%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- South Korea -->
+                <div id="south-korea" class="country-card">
+                  <div class="country-header">
+                    <h2 class="country-name">South Korea</h2>
+                    <p class="trade-volume">Annual Trade Volume: $197.1 billion</p>
+                  </div>
+                  <div class="country-body">
+                    <div class="tariff-category">
+                      <h3 class="category-name">Electronics</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on Korean Imports</div>
+                        <div class="label-partner">Korean Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 15%;">0.9%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 30%;">3.2%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="tariff-category">
+                      <h3 class="category-name">Automotive</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on Korean Imports</div>
+                        <div class="label-partner">Korean Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 25%;">2.5%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 80%;">8.0%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="tariff-category">
+                      <h3 class="category-name">Agricultural Products</h3>
+                      <div class="chart-labels">
+                        <div class="label-us">US Tariffs on Korean Imports</div>
+                        <div class="label-partner">Korean Tariffs on US Exports</div>
+                      </div>
+                      <div class="tariff-chart">
+                        <div class="bar-container">
+                          <div class="us-bar-container">
+                            <div class="us-bar" style="width: 30%;">3.1%</div>
+                          </div>
+                          <div class="mid-line"></div>
+                          <div class="partner-bar-container">
+                            <div class="partner-bar" style="width: 142%;">42.7%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Taiwan -->
+    <div id="taiwan" class="country-card">
+      <div class="country-header">
+        <h2 class="country-name">Taiwan</h2>
+        <p class="trade-volume">Annual Trade Volume: $158.6 billion</p>
+      </div>
+      <div class="country-body">
+        <div class="tariff-category">
+          <h3 class="category-name">Electronics & Semiconductors</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Taiwanese Imports</div>
+            <div class="label-partner">Taiwanese Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 18%;">1.5%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 40%;">5.1%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Machinery</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Taiwanese Imports</div>
+            <div class="label-partner">Taiwanese Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 27%;">2.3%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 45%;">5.8%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Agricultural Products</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Taiwanese Imports</div>
+            <div class="label-partner">Taiwanese Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 32%;">3.4%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 102%;">15.7%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Vietnam -->
+    <div id="vietnam" class="country-card">
+      <div class="country-header">
+        <h2 class="country-name">Vietnam</h2>
+        <p class="trade-volume">Annual Trade Volume: $149.7 billion</p>
+      </div>
+      <div class="country-body">
+        <div class="tariff-category">
+          <h3 class="category-name">Textiles & Apparel</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Vietnamese Imports</div>
+            <div class="label-partner">Vietnamese Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 110%;">17.6%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 60%;">7.9%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Electronics</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Vietnamese Imports</div>
+            <div class="label-partner">Vietnamese Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 30%;">2.8%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 85%;">11.2%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Agricultural Products</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Vietnamese Imports</div>
+            <div class="label-partner">Vietnamese Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 45%;">5.3%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 118%;">18.6%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- United Kingdom -->
+    <div id="uk" class="country-card">
+      <div class="country-header">
+        <h2 class="country-name">United Kingdom</h2>
+        <p class="trade-volume">Annual Trade Volume: $148.0 billion</p>
+      </div>
+      <div class="country-body">
+        <div class="tariff-category">
+          <h3 class="category-name">Pharmaceuticals</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on UK Imports</div>
+            <div class="label-partner">UK Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 15%;">0.7%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 15%;">0.6%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Machinery</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on UK Imports</div>
+            <div class="label-partner">UK Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 21%;">1.9%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 36%;">4.2%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Agricultural Products</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on UK Imports</div>
+            <div class="label-partner">UK Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 26%;">2.3%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 62%;">7.8%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- India -->
+    <div id="india" class="country-card">
+      <div class="country-header">
+        <h2 class="country-name">India</h2>
+        <p class="trade-volume">Annual Trade Volume: $129.2 billion</p>
+      </div>
+      <div class="country-body">
+        <div class="tariff-category">
+          <h3 class="category-name">Textiles & Apparel</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Indian Imports</div>
+            <div class="label-partner">Indian Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 90%;">13.1%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 110%;">17.5%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tariff-category">
+          <h3 class="category-name">Pharmaceuticals</h3>
+          <div class="chart-labels">
+            <div class="label-us">US Tariffs on Indian Imports</div>
+            <div class="label-partner">Indian Tariffs on US Exports</div>
+          </div>
+          <div class="tariff-chart">
+            <div class="bar-container">
+              <div class="us-bar-container">
+                <div class="us-bar" style="width: 20%;">1.4%</div>
+              </div>
+              <div class="mid-line"></div>
+              <div class="partner-bar-container">
+                <div class="partner-bar" style="width: 100%;">15.3%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
